@@ -1,13 +1,13 @@
-import { Link, useLocalSearchParams } from 'expo-router';
-import { StyleSheet, ScrollView } from 'react-native';
+import { Link, useLocalSearchParams } from "expo-router";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedButton } from '@/components/themed-button';
-import { ThemedCard } from '@/components/themed-card';
-import { ThemedDivider } from '@/components/themed-divider';
-import { useCart } from '@/contexts/CartContext';
-import { MOCK_PRODUCTS } from '@/types/product';
+import { ThemedButton } from "@/components/themed-button";
+import { ThemedCard } from "@/components/themed-card";
+import { ThemedDivider } from "@/components/themed-divider";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useCart } from "@/contexts/CartContext";
+import { MOCK_PRODUCTS } from "@/types/product";
 
 function formatPrice(price: number): string {
   return `$${price.toFixed(2)}`;
@@ -17,7 +17,7 @@ export default function ProductDetailsModal() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addToCart } = useCart();
 
-  const product = MOCK_PRODUCTS.find((p) => p.id === id);
+  const product = MOCK_PRODUCTS.find(p => p.id === id);
 
   if (!product) {
     return (
@@ -79,46 +79,49 @@ export default function ProductDetailsModal() {
 
 const styles = StyleSheet.create({
   scrollView: {
-    flex: 1,
+    flex: 1
   },
   container: {
     flex: 1,
     padding: 20,
-    gap: 16,
+    gap: 16
   },
   productCard: {
-    marginBottom: 8,
+    marginBottom: 8
   },
   header: {
-    marginBottom: 8,
+    marginBottom: 8
   },
   productName: {
-    marginBottom: 8,
+    marginBottom: 16
   },
   productPrice: {
-    fontSize: 28,
+    fontSize: 32,
+    fontWeight: "bold",
+    lineHeight: 32,
+    marginTop: 8
   },
   divider: {
-    marginVertical: 16,
+    marginVertical: 16
   },
   descriptionContainer: {
-    marginBottom: 8,
+    marginBottom: 8
   },
   sectionTitle: {
-    marginBottom: 8,
+    marginBottom: 8
   },
   description: {
     fontSize: 16,
     lineHeight: 24,
-    opacity: 0.9,
+    opacity: 0.9
   },
   actionsContainer: {
-    marginTop: 8,
+    marginTop: 8
   },
   addButton: {
-    width: '100%',
+    width: "100%"
   },
   link: {
-    marginTop: 8,
-  },
+    marginTop: 8
+  }
 });
