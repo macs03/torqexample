@@ -1,4 +1,5 @@
-import { ScrollView, StyleSheet } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { CartItemCard } from "@/app/_components/CartItemCard";
 import { ThemedButton } from "@/components/themed-button";
@@ -17,19 +18,15 @@ export default function CartScreen() {
   const total = getTotal();
 
   return (
-    <ThemedView style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
-        <ThemedView style={styles.header}>
-          <ThemedText type="title" style={styles.title}>
-            Shopping Cart
-          </ThemedText>
-        </ThemedView>
-
+    <SafeAreaView style={styles.safeAreaView}>
+      <ThemedView style={styles.container}>
         {items.length === 0 ? (
           <ThemedView style={styles.emptyContainer}>
+            <ThemedView style={styles.header}>
+              <ThemedText type="title" style={styles.title}>
+                Shopping Cart
+              </ThemedText>
+            </ThemedView>
             <ThemedText type="default" style={styles.emptyText}>
               Your cart is empty
             </ThemedText>
@@ -38,45 +35,55 @@ export default function CartScreen() {
             </ThemedText>
           </ThemedView>
         ) : (
-          <>
-            {items.map(item => (
-              <CartItemCard key={item.product.id} item={item} />
-            ))}
-
-            <ThemedDivider style={styles.totalDivider} />
-
-            <ThemedCard variant="elevated" style={styles.totalCard}>
-              <ThemedView style={styles.totalRow}>
-                <ThemedText type="title" style={styles.totalLabel}>
-                  Total:
-                </ThemedText>
-                <ThemedText type="title" style={styles.totalAmount}>
-                  {formatPrice(total)}
+          <FlatList
+            data={items}
+            renderItem={({ item }) => <CartItemCard item={item} />}
+            keyExtractor={item => item.product.id}
+            contentContainerStyle={styles.listContent}
+            ListHeaderComponent={
+              <ThemedView style={styles.header}>
+                <ThemedText type="title" style={styles.title}>
+                  Shopping Cart
                 </ThemedText>
               </ThemedView>
-            </ThemedCard>
-
-            <ThemedButton
-              title="Clear Cart"
-              variant="outline"
-              onPress={clearCart}
-              style={styles.clearButton}
-            />
-          </>
+            }
+            ListFooterComponent={
+              <>
+                <ThemedDivider style={styles.totalDivider} />
+                <ThemedCard variant="elevated" style={styles.totalCard}>
+                  <ThemedView style={styles.totalRow}>
+                    <ThemedText type="title" style={styles.totalLabel}>
+                      Total:
+                    </ThemedText>
+                    <ThemedText type="title" style={styles.totalAmount}>
+                      {formatPrice(total)}
+                    </ThemedText>
+                  </ThemedView>
+                </ThemedCard>
+                <ThemedButton
+                  title="Clear Cart"
+                  variant="outline"
+                  onPress={clearCart}
+                  style={styles.clearButton}
+                />
+              </>
+            }
+          />
         )}
-      </ScrollView>
-    </ThemedView>
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeAreaView: {
+    height: "100%",
+    backgroundColor: "white"
+  },
   container: {
     flex: 1
   },
-  scrollView: {
-    flex: 1
-  },
-  scrollContent: {
+  listContent: {
     padding: 16,
     gap: 16
   },
