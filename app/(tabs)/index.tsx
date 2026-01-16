@@ -3,9 +3,15 @@ import { Platform, StyleSheet } from "react-native";
 
 import { HelloWave } from "@/components/hello-wave";
 import ParallaxScrollView from "@/components/parallax-scroll-view";
+import { ThemedButton } from "@/components/themed-button";
+import { ThemedCard } from "@/components/themed-card";
 import { ThemedText } from "@/components/themed-text";
+import { ThemedTextInput } from "@/components/themed-text-input";
 import { ThemedView } from "@/components/themed-view";
 import { Link } from "expo-router";
+import { ThemedDivider } from "@/components/themed-divider";
+import { ThemedBadge } from "@/components/themed-badge";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function HomeScreen() {
   return (
@@ -91,6 +97,16 @@ export default function HomeScreen() {
             </ThemedText>
           </Link.Trigger>
         </Link>
+        <ThemedCard variant="elevated">
+          <ThemedText type="title">Login</ThemedText>
+          <ThemedDivider />
+          <ThemedBadge variant="primary">
+            <ThemedText>Login</ThemedText>
+          </ThemedBadge>
+          <ThemedTextInput placeholder="Email" variant="outline" />
+          <ThemedButton title="Submit" variant="primary" />
+          <LoadingSpinner size="large" />
+        </ThemedCard>
       </ThemedView>
     </ParallaxScrollView>
   );
