@@ -8,7 +8,7 @@ import { MOCK_PRODUCTS } from "@/types/product";
 
 export default function ProductsScreen() {
   return (
-    <SafeAreaView style={styles.safeAreaView}>
+    <SafeAreaView edges={["top"]} style={styles.safeAreaView}>
       <ThemedView style={styles.container}>
         <FlatList
           data={MOCK_PRODUCTS}

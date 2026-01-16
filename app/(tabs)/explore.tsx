@@ -18,7 +18,7 @@ export default function CartScreen() {
   const total = getTotal();
 
   return (
-    <SafeAreaView style={styles.safeAreaView}>
+    <SafeAreaView edges={["top"]} style={styles.safeAreaView}>
       <ThemedView style={styles.container}>
         {items.length === 0 ? (
           <ThemedView style={styles.emptyContainer}>
