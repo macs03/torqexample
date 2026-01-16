@@ -1,29 +1,124 @@
-import { Link } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { Link, useLocalSearchParams } from 'expo-router';
+import { StyleSheet, ScrollView } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { ThemedButton } from '@/components/themed-button';
+import { ThemedCard } from '@/components/themed-card';
+import { ThemedDivider } from '@/components/themed-divider';
+import { useCart } from '@/contexts/CartContext';
+import { MOCK_PRODUCTS } from '@/types/product';
 
-export default function ModalScreen() {
+function formatPrice(price: number): string {
+  return `$${price.toFixed(2)}`;
+}
+
+export default function ProductDetailsModal() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const { addToCart } = useCart();
+
+  const product = MOCK_PRODUCTS.find((p) => p.id === id);
+
+  if (!product) {
+    return (
+      <ThemedView style={styles.container}>
+        <ThemedText type="title">Product not found</ThemedText>
+        <Link href="/(tabs)" asChild style={styles.link}>
+          <ThemedButton title="Go back" variant="primary" />
+        </Link>
+      </ThemedView>
+    );
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">This is a modal</ThemedText>
-      <Link href="/" dismissTo style={styles.link}>
-        <ThemedText type="link">Go to home screen</ThemedText>
-      </Link>
-    </ThemedView>
+    <ScrollView style={styles.scrollView}>
+      <ThemedView style={styles.container}>
+        <ThemedCard variant="elevated" style={styles.productCard}>
+          <ThemedView style={styles.header}>
+            <ThemedText type="title" style={styles.productName}>
+              {product.name}
+            </ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.productPrice}>
+              {formatPrice(product.price)}
+            </ThemedText>
+          </ThemedView>
+
+          <ThemedDivider style={styles.divider} />
+
+          <ThemedView style={styles.descriptionContainer}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Description
+            </ThemedText>
+            <ThemedText style={styles.description}>
+              {product.description}
+            </ThemedText>
+          </ThemedView>
+
+          <ThemedDivider style={styles.divider} />
+
+          <ThemedView style={styles.actionsContainer}>
+            <ThemedButton
+              title="Add to Cart"
+              variant="primary"
+              size="large"
+              onPress={() => {
+                addToCart(product);
+              }}
+              style={styles.addButton}
+            />
+          </ThemedView>
+        </ThemedCard>
+
+        <Link href="/(tabs)" asChild style={styles.link}>
+          <ThemedButton title="Close" variant="outline" />
+        </Link>
+      </ThemedView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollView: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
+    gap: 16,
+  },
+  productCard: {
+    marginBottom: 8,
+  },
+  header: {
+    marginBottom: 8,
+  },
+  productName: {
+    marginBottom: 8,
+  },
+  productPrice: {
+    fontSize: 28,
+  },
+  divider: {
+    marginVertical: 16,
+  },
+  descriptionContainer: {
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    marginBottom: 8,
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
+    opacity: 0.9,
+  },
+  actionsContainer: {
+    marginTop: 8,
+  },
+  addButton: {
+    width: '100%',
   },
   link: {
-    marginTop: 15,
-    paddingVertical: 15,
+    marginTop: 8,
   },
 });

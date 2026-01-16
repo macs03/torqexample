@@ -1,112 +1,246 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import * as Haptics from "expo-haptics";
+import { Pressable, ScrollView, StyleSheet } from "react-native";
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { ThemedButton } from "@/components/themed-button";
+import { ThemedCard } from "@/components/themed-card";
+import { ThemedDivider } from "@/components/themed-divider";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { IconSymbol } from "@/components/ui/icon-symbol";
+import { useCart } from "@/contexts/CartContext";
+import { useThemeColor } from "@/hooks/use-theme-color";
 
-export default function TabTwoScreen() {
+function formatPrice(price: number): string {
+  return `$${price.toFixed(2)}`;
+}
+
+function CartItemCard({
+  item
+}: {
+  item: {
+    product: { id: string; name: string; price: number };
+    quantity: number;
+  };
+}) {
+  const { updateQuantity, removeFromCart } = useCart();
+  const iconColor = useThemeColor({}, "icon");
+
+  const subtotal = item.product.price * item.quantity;
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
+    <ThemedCard variant="elevated" style={styles.cartItemCard}>
+      <ThemedView style={styles.cartItemHeader}>
+        <ThemedView style={styles.cartItemInfo}>
+          <ThemedText type="subtitle" style={styles.cartItemName}>
+            {item.product.name}
+          </ThemedText>
+          <ThemedText type="default" style={styles.cartItemPrice}>
+            {formatPrice(item.product.price)} each
+          </ThemedText>
+        </ThemedView>
+        <Pressable
+          onPress={() => {
+            if (process.env.EXPO_OS === "ios") {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }
+            removeFromCart(item.product.id);
+          }}
+          style={({ pressed }) => [
+            styles.removeButton,
+            { opacity: pressed ? 0.6 : 1 }
+          ]}
+        >
+          <IconSymbol name="trash.fill" size={20} color={iconColor} />
+        </Pressable>
+      </ThemedView>
+
+      <ThemedDivider style={styles.divider} />
+
+      <ThemedView style={styles.quantityContainer}>
+        <ThemedView style={styles.quantityControls}>
+          <ThemedButton
+            title="-"
+            variant="outline"
+            size="small"
+            onPress={() => updateQuantity(item.product.id, item.quantity - 1)}
+            style={styles.quantityButton}
+          />
+          <ThemedText type="defaultSemiBold" style={styles.quantityText}>
+            {item.quantity}
+          </ThemedText>
+          <ThemedButton
+            title="+"
+            variant="outline"
+            size="small"
+            onPress={() => updateQuantity(item.product.id, item.quantity + 1)}
+            style={styles.quantityButton}
+          />
+        </ThemedView>
+        <ThemedText type="defaultSemiBold" style={styles.subtotalText}>
+          Subtotal: {formatPrice(subtotal)}
         </ThemedText>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
+    </ThemedCard>
+  );
+}
+
+export default function CartScreen() {
+  const { items, getTotal, clearCart } = useCart();
+  const total = getTotal();
+
+  return (
+    <ThemedView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <ThemedView style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            Shopping Cart
+          </ThemedText>
+        </ThemedView>
+
+        {items.length === 0 ? (
+          <ThemedView style={styles.emptyContainer}>
+            <ThemedText type="default" style={styles.emptyText}>
+              Your cart is empty
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+            <ThemedText type="default" style={styles.emptySubtext}>
+              Add some delicious bagels to get started!
+            </ThemedText>
+          </ThemedView>
+        ) : (
+          <>
+            {items.map(item => (
+              <CartItemCard key={item.product.id} item={item} />
+            ))}
+
+            <ThemedDivider style={styles.totalDivider} />
+
+            <ThemedCard variant="elevated" style={styles.totalCard}>
+              <ThemedView style={styles.totalRow}>
+                <ThemedText type="title" style={styles.totalLabel}>
+                  Total:
+                </ThemedText>
+                <ThemedText type="title" style={styles.totalAmount}>
+                  {formatPrice(total)}
+                </ThemedText>
+              </ThemedView>
+            </ThemedCard>
+
+            <ThemedButton
+              title="Clear Cart"
+              variant="outline"
+              onPress={clearCart}
+              style={styles.clearButton}
+            />
+          </>
+        )}
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  scrollView: {
+    flex: 1
   },
+  scrollContent: {
+    padding: 16,
+    gap: 16
+  },
+  header: {
+    marginBottom: 8
+  },
+  title: {
+    marginBottom: 4
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60
+  },
+  emptyText: {
+    fontSize: 18,
+    marginBottom: 8,
+    opacity: 0.7
+  },
+  emptySubtext: {
+    fontSize: 14,
+    opacity: 0.5,
+    textAlign: "center"
+  },
+  cartItemCard: {
+    marginBottom: 8
+  },
+  cartItemHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8
+  },
+  cartItemInfo: {
+    flex: 1
+  },
+  cartItemName: {
+    marginBottom: 4
+  },
+  cartItemPrice: {
+    opacity: 0.7
+  },
+  removeButton: {
+    padding: 8,
+    minWidth: 40,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  divider: {
+    marginVertical: 8
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12
+  },
+  quantityButton: {
+    minWidth: 40
+  },
+  quantityText: {
+    fontSize: 18,
+    minWidth: 30,
+    textAlign: "center"
+  },
+  subtotalText: {
+    fontSize: 16
+  },
+  totalDivider: {
+    marginVertical: 8
+  },
+  totalCard: {
+    marginTop: 8
+  },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+  totalLabel: {
+    fontSize: 20
+  },
+  totalAmount: {
+    fontSize: 24
+  },
+  clearButton: {
+    marginTop: 8
+  }
 });

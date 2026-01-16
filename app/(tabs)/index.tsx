@@ -1,132 +1,140 @@
-import { Image } from "expo-image";
-import { Platform, StyleSheet } from "react-native";
+import { Link } from "expo-router";
+import { ScrollView, StyleSheet } from "react-native";
 
-import { HelloWave } from "@/components/hello-wave";
-import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedButton } from "@/components/themed-button";
 import { ThemedCard } from "@/components/themed-card";
-import { ThemedText } from "@/components/themed-text";
-import { ThemedTextInput } from "@/components/themed-text-input";
-import { ThemedView } from "@/components/themed-view";
-import { Link } from "expo-router";
 import { ThemedDivider } from "@/components/themed-divider";
-import { ThemedBadge } from "@/components/themed-badge";
-import { LoadingSpinner } from "@/components/loading-spinner";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useCart } from "@/contexts/CartContext";
+import { MOCK_PRODUCTS, Product } from "@/types/product";
 
-export default function HomeScreen() {
+function formatPrice(price: number): string {
+  return `$${price.toFixed(2)}`;
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const { addToCart } = useCart();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
+    <ThemedCard variant="elevated" style={styles.productCard}>
+      <ThemedView style={styles.productHeader}>
+        <ThemedView style={styles.productInfo}>
+          <ThemedText type="subtitle" style={styles.productName}>
+            {product.name}
+          </ThemedText>
+          <ThemedText type="defaultSemiBold" style={styles.productPrice}>
+            {formatPrice(product.price)}
+          </ThemedText>
+        </ThemedView>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12"
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction
-              title="Action"
-              icon="cube"
-              onPress={() => alert("Action pressed")}
-            />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert("Share pressed")}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert("Delete pressed")}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">
-            npm run reset-project
-          </ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/profile">
-          <Link.Trigger>
-            <ThemedText type="subtitle">
-              Step 4: Go to a different screen
-            </ThemedText>
-          </Link.Trigger>
+      <ThemedDivider style={styles.divider} />
+
+      <ThemedText style={styles.productDescription} numberOfLines={2}>
+        {product.description}
+      </ThemedText>
+
+      <ThemedView style={styles.actionsContainer}>
+        <ThemedButton
+          title="Add to Cart"
+          variant="primary"
+          size="small"
+          onPress={() => addToCart(product)}
+          style={styles.addButton}
+        />
+        <Link href={`/modal?id=${product.id}`} asChild>
+          <ThemedButton
+            title="View Details"
+            variant="outline"
+            size="small"
+            style={styles.detailsButton}
+          />
         </Link>
-        <ThemedCard variant="elevated">
-          <ThemedText type="title">Login</ThemedText>
-          <ThemedDivider />
-          <ThemedBadge variant="primary">
-            <ThemedText>Login</ThemedText>
-          </ThemedBadge>
-          <ThemedTextInput placeholder="Email" variant="outline" />
-          <ThemedButton title="Submit" variant="primary" />
-          <LoadingSpinner size="large" />
-        </ThemedCard>
       </ThemedView>
-    </ParallaxScrollView>
+    </ThemedCard>
+  );
+}
+
+export default function ProductsScreen() {
+  return (
+    <ThemedView style={styles.container}>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <ThemedView style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            Our Bagels
+          </ThemedText>
+          <ThemedText type="default" style={styles.subtitle}>
+            Freshly baked daily
+          </ThemedText>
+        </ThemedView>
+
+        {MOCK_PRODUCTS.map(product => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </ScrollView>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8
+  container: {
+    flex: 1
   },
-  stepContainer: {
-    gap: 8,
+  scrollView: {
+    flex: 1
+  },
+  scrollContent: {
+    padding: 16,
+    gap: 16
+  },
+  header: {
     marginBottom: 8
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute"
+  title: {
+    marginBottom: 4
+  },
+  subtitle: {
+    opacity: 0.7
+  },
+  productCard: {
+    marginBottom: 8
+  },
+  productHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 8
+  },
+  productInfo: {
+    flex: 1
+  },
+  productName: {
+    marginBottom: 4
+  },
+  productPrice: {
+    fontSize: 20
+  },
+  productDescription: {
+    marginTop: 8,
+    marginBottom: 12,
+    opacity: 0.8
+  },
+  divider: {
+    marginVertical: 8
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 8
+  },
+  addButton: {
+    flex: 1
+  },
+  detailsButton: {
+    flex: 1
   }
 });
