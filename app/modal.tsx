@@ -7,6 +7,7 @@ import { ThemedDivider } from "@/components/themed-divider";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/contexts/ToastContext";
 import { MOCK_PRODUCTS } from "@/types/product";
 
 function formatPrice(price: number): string {
@@ -17,6 +18,7 @@ export default function ProductDetailsModal() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   const product = MOCK_PRODUCTS.find(p => p.id === id);
 
@@ -67,6 +69,8 @@ export default function ProductDetailsModal() {
               size="large"
               onPress={() => {
                 addToCart(product);
+                showToast(`${product.name} added to cart!`);
+                router.back();
               }}
               style={styles.addButton}
             />

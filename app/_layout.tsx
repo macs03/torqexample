@@ -5,6 +5,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { CartProvider } from '@/contexts/CartContext';
+import { ToastProvider } from '@/contexts/ToastContext';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -14,14 +15,16 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <CartProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Product Details' }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </CartProvider>
+    <ToastProvider>
+      <CartProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Product Details' }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </CartProvider>
+    </ToastProvider>
   );
 }

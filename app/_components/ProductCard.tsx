@@ -7,6 +7,7 @@ import { ThemedDivider } from "@/components/themed-divider";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/contexts/ToastContext";
 import { Product } from "@/types/product";
 
 function formatPrice(price: number): string {
@@ -15,6 +16,7 @@ function formatPrice(price: number): string {
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
+  const { showToast } = useToast();
 
   return (
     <ThemedCard variant="elevated" style={styles.productCard}>
@@ -40,7 +42,10 @@ export function ProductCard({ product }: { product: Product }) {
           title="Add to Cart"
           variant="primary"
           size="small"
-          onPress={() => addToCart(product)}
+          onPress={() => {
+            addToCart(product);
+            showToast(`${product.name} added to cart!`);
+          }}
           style={styles.addButton}
         />
         <Link href={`/modal?id=${product.id}`} asChild>

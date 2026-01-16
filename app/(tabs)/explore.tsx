@@ -8,6 +8,7 @@ import { ThemedDivider } from "@/components/themed-divider";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/contexts/ToastContext";
 
 function formatPrice(price: number): string {
   return `$${price.toFixed(2)}`;
@@ -15,6 +16,7 @@ function formatPrice(price: number): string {
 
 export default function CartScreen() {
   const { items, getTotal, clearCart } = useCart();
+  const { showToast } = useToast();
   const total = getTotal();
 
   return (
@@ -63,7 +65,10 @@ export default function CartScreen() {
                 <ThemedButton
                   title="Clear Cart"
                   variant="outline"
-                  onPress={clearCart}
+                  onPress={() => {
+                    clearCart();
+                    showToast("Cart cleared!");
+                  }}
                   style={styles.clearButton}
                 />
               </>
