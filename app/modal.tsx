@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 
 import { ThemedButton } from "@/components/themed-button";
@@ -19,6 +20,7 @@ export default function ProductDetailsModal() {
   const router = useRouter();
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const [quantity, setQuantity] = useState(1);
 
   const product = MOCK_PRODUCTS.find(p => p.id === id);
 
@@ -62,14 +64,50 @@ export default function ProductDetailsModal() {
 
           <ThemedDivider style={styles.divider} />
 
+          <ThemedView style={styles.quantitySection}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              Quantity
+            </ThemedText>
+            <ThemedView style={styles.quantityContainer}>
+              <ThemedView style={styles.quantityControls}>
+                <ThemedButton
+                  title="-"
+                  variant="outline"
+                  size="small"
+                  onPress={() => setQuantity(prev => Math.max(1, prev - 1))}
+                  style={styles.quantityButton}
+                />
+                <ThemedText type="defaultSemiBold" style={styles.quantityText}>
+                  {quantity}
+                </ThemedText>
+                <ThemedButton
+                  title="+"
+                  variant="outline"
+                  size="small"
+                  onPress={() => setQuantity(prev => prev + 1)}
+                  style={styles.quantityButton}
+                />
+              </ThemedView>
+              <ThemedText type="defaultSemiBold" style={styles.subtotalText}>
+                Subtotal: {formatPrice(product.price * quantity)}
+              </ThemedText>
+            </ThemedView>
+          </ThemedView>
+
+          <ThemedDivider style={styles.divider} />
+
           <ThemedView style={styles.actionsContainer}>
             <ThemedButton
               title="Add to Cart"
               variant="primary"
               size="large"
               onPress={() => {
-                addToCart(product);
-                showToast(`${product.name} added to cart!`);
+                addToCart(product, quantity);
+                const message =
+                  quantity === 1
+                    ? `${product.name} added to cart!`
+                    : `${quantity} ${product.name} added to cart!`;
+                showToast(message);
                 router.back();
               }}
               style={styles.addButton}
@@ -125,6 +163,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     opacity: 0.9
+  },
+  quantitySection: {
+    marginTop: 8,
+    marginBottom: 8
+  },
+  quantityContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 12
+  },
+  quantityControls: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12
+  },
+  quantityButton: {
+    minWidth: 40
+  },
+  quantityText: {
+    fontSize: 18,
+    minWidth: 30,
+    textAlign: "center"
+  },
+  subtotalText: {
+    fontSize: 16
   },
   actionsContainer: {
     marginTop: 8
