@@ -230,6 +230,7 @@ Some potential improvements to expand functionality:
 - [ ] Product search and filters
 - [ ] Real product images
 - [ ] Favorites system
+- [ ] Handle product by category
 
 ## 📄 License
 
