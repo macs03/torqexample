@@ -1,4 +1,4 @@
-import { Link, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, StyleSheet } from "react-native";
 
 import { ThemedButton } from "@/components/themed-button";
@@ -15,6 +15,7 @@ function formatPrice(price: number): string {
 
 export default function ProductDetailsModal() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const { addToCart } = useCart();
 
   const product = MOCK_PRODUCTS.find(p => p.id === id);
@@ -23,9 +24,12 @@ export default function ProductDetailsModal() {
     return (
       <ThemedView style={styles.container}>
         <ThemedText type="title">Product not found</ThemedText>
-        <Link href="/(tabs)" asChild style={styles.link}>
-          <ThemedButton title="Go back" variant="primary" />
-        </Link>
+        <ThemedButton
+          title="Go back"
+          variant="primary"
+          onPress={() => router.back()}
+          style={styles.link}
+        />
       </ThemedView>
     );
   }
@@ -69,9 +73,12 @@ export default function ProductDetailsModal() {
           </ThemedView>
         </ThemedCard>
 
-        <Link href="/(tabs)" asChild style={styles.link}>
-          <ThemedButton title="Close" variant="outline" />
-        </Link>
+        <ThemedButton
+          title="Close"
+          variant="outline"
+          onPress={() => router.back()}
+          style={styles.link}
+        />
       </ThemedView>
     </ScrollView>
   );
